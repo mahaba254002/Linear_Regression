@@ -1,0 +1,10 @@
+{
+    "r.lsp.promptToInstall": false,
+    "zenMode.centerLayout": false,
+    "zenMode.fullScreen": false,
+    "zenMode.hideActivityBar": true,
+    "zenMode.hideLineNumbers": false,
+    "zenMode.hideStatusBar": true,
+    "zenMode.restore": false,
+    "zenMode.silentNotifications": false
+}

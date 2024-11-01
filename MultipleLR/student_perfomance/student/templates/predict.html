@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Your Performance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("/static/student/students2.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: rgb(108, 76, 76);
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-row div {
+            flex: 1;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            color: #fff;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 50%;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2em;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 1.2em;
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>Predict Your Performance Index</h2>
+            <p>Enter the following details to get a performance prediction.</p>
+        </div>
+
+        <form id="predictionForm">
+            <div class="form-row">
+                <div>
+                    <label for="hoursStudied">Hours Studied:</label>
+                    <input type="number" id="hoursStudied" name="x1" min="1" max="9" required>
+                </div>
+                <div>
+                    <label for="previousScores">Previous Scores:</label>
+                    <input type="number" id="previousScores" name="x2" min="40" max="99" required>
+                </div>
+            </div>
+        
+            <div class="form-row">
+                <div>
+                    <label for="sleepHours">Sleep Hours:</label>
+                    <input type="number" id="sleepHours" name="x4" min="4" max="9" required>
+                </div>
+                <div>
+                    <label>Extracurricular Activities:</label>
+                    <input type="radio" id="activitiesYes" name="activities" value="0" checked>
+                    <label for="activitiesYes" style="display: inline;">Yes</label>
+        
+                    <input type="radio" id="activitiesNo" name="activities" value="1">
+                    <label for="activitiesNo" style="display: inline;">No</label>
+                </div>
+            </div>
+        </form>
+        
+            <div>
+                <label for="questionPapers">Sample Number of Question Papers Practiced:</label>
+                <input type="number" id="questionPapers" name="x5" min="0" max="9" required>
+            </div>
+
+            <button type="button" class="button" onclick="predictPerformance()">Predict Performance</button>
+        </form>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function predictPerformance() {
+            const formData = {
+                x1: parseFloat(document.getElementById('hoursStudied').value),
+                x2: parseFloat(document.getElementById('previousScores').value),
+                x3: parseInt(document.querySelector('input[name="activities"]:checked').value), // Convert yes/no to 0/1
+                x4: parseFloat(document.getElementById('sleepHours').value),
+                x5: parseFloat(document.getElementById('questionPapers').value)
+            };
+
+            // Ensure all numeric inputs are valid and non-negative
+            if (
+                isNaN(formData.x1) || formData.x1 < 0 ||
+                isNaN(formData.x2) || formData.x2 < 0 ||
+                isNaN(formData.x4) || formData.x4 < 0 ||
+                isNaN(formData.x5) || formData.x5 < 0
+            ) {
+                document.getElementById('result').textContent =
+                    'Please enter valid non-negative values for all numeric fields.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/student/predict_performance', {  // Add '/student' here
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+
+                if (!response.ok) throw new Error('Network response was not ok');
+
+                const result = await response.json();
+                document.getElementById('result').textContent =
+                    `Predicted Performance Index: ${result.predictedIndex}`;
+            } catch (error) {
+                document.getElementById('result').textContent =
+                    'Error predicting performance. Please try again.';
+            }
+        }
+    </script>
+
+</body>
+
+</html>
